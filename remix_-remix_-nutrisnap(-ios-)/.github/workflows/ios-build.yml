@@ -1,0 +1,47 @@
+name: Build IPA (Auto-Capacitor)
+on: [push]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20 # Используем свежую версию
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Web Build
+        run: npm run build
+
+      - name: Add iOS Platform (Cloud)
+        run: |
+          npm install @capacitor/ios
+          npx cap add ios
+          npx cap sync ios
+
+      - name: Build App (Xcode)
+        run: |
+          xcodebuild -workspace ios/App/App.xcworkspace \
+                     -scheme App \
+                     -sdk iphoneos \
+                     -configuration Release \
+                     -derivedDataPath build \
+                     CODE_SIGNING_ALLOWED=NO \
+                     clean build
+
+      - name: Create IPA
+        run: |
+          mkdir -p Payload
+          cp -r build/Build/Products/Release-iphoneos/App.app Payload/
+          zip -r NutriSnap.ipa Payload
+          
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: NutriSnap-iOS-Package
+          path: NutriSnap.ipa
