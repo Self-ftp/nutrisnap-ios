@@ -1,0 +1,7 @@
+{
+  "name": "Remix: Remix: NutriSnap( IOS )",
+  "description": "Отслеживание калорий с помощью GigaChat по фотографиям еды. Сделайте фото и мгновенно получите информацию о питательной ценности.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
